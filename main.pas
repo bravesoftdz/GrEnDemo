@@ -1,16 +1,19 @@
 unit main;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics,
+  Controls, Forms, Dialogs,
   Menus, ExtCtrls, GrEn;
 
 type
-  TPyrArray = array [0..47] of Integer;
-  TPyrPolygones = array [0..4] of Integer;
-  TCubeArray = array [0..71] of Integer;
-  TCubePolygones = array [0..5] of Integer;
+  TPyrArray = array [0..47] of integer;
+  TPyrPolygones = array [0..4] of integer;
+  TCubeArray = array [0..71] of integer;
+  TCubePolygones = array [0..5] of integer;
 
   TForm1 = class(TForm)
     MainMenu1: TMainMenu;
@@ -52,17 +55,17 @@ var
   aThread: TDrawThread;
 
 const
-  PyrPoints: TPyrArray = (0, -20, 0,  20, 20, 20,  -20, 20, 20,
-                          0, -20, 0,  -20, 20, 20,  -20, 20, -20,
-                          0, -20, 0,  -20, 20, -20,  20, 20, -20,
-                          0, -20, 0,  20, 20, -20,  20, 20, -20,
-                          -20, 20, 20,  20, 20, 20,  20, 20, -20,
-                          -20, 20, -20);
+  PyrPoints: TPyrArray = (0, -20, 0, 20, 20, 20, -20, 20, 20,
+    0, -20, 0, -20, 20, 20, -20, 20, -20,
+    0, -20, 0, -20, 20, -20, 20, 20, -20,
+    0, -20, 0, 20, 20, -20, 20, 20, -20,
+    -20, 20, 20, 20, 20, 20, 20, 20, -20,
+    -20, 20, -20);
   PyrFace: TPyrPolygones = (3, 3, 3, 3, 4);
 
 implementation
 
-{$R *.DFM}
+{$R *.lfm}
 
 constructor TDrawThread.Create;
 begin
@@ -71,15 +74,16 @@ end;
 
 procedure TDrawThread.Method1;
 begin
-    Form1.gren1.ClearBackPage;
-    Form1.gren1.Rotate(0, 1, 0, 0.1, Form1.CurrentObject^);
-    Form1.gren1.RenderNow(Form1.CurrentObject^);
-    Form1.gren1.FlipBackPage;
+  Form1.gren1.ClearBackPage;
+  Form1.gren1.Rotate(0, 1, 0, 0.1, Form1.CurrentObject^);
+  Form1.gren1.RenderNow(Form1.CurrentObject^);
+  Form1.gren1.FlipBackPage;
 end;
 
 procedure TDrawThread.Execute;
 begin
-  while not Terminated do begin
+  while not Terminated do
+  begin
     Synchronize(Method1);
     Sleep(50);
   end;
@@ -87,14 +91,16 @@ end;
 
 procedure TForm1.Cube1Click(Sender: TObject);
 begin
-  if Cube1.Checked then Exit;
+  if Cube1.Checked then
+    Exit;
   Cube1.Checked := True;
   CurrentObject := @Cube;
 end;
 
 procedure TForm1.Pyramid1Click(Sender: TObject);
 begin
-  if Pyramid1.Checked then Exit;
+  if Pyramid1.Checked then
+    Exit;
   Pyramid1.Checked := True;
   CurrentObject := @Pyramid;
 end;
@@ -125,40 +131,40 @@ begin
   gren1.FlipBackPage;
 end;
 
-function Point3D(x, y, z: Single): TPoint3D;
+function Point3D(x, y, z: single): TPoint3D;
 begin
   Result.x := x;
   Result.y := y;
   Result.z := z;
 end;
 
-function OffsetPoint3D(const Pt: TPoint3D; dx, dy, dz: Single): TPoint3D;
+function OffsetPoint3D(const Pt: TPoint3D; dx, dy, dz: single): TPoint3D;
 begin
   Result.X := Pt.X + dx;
   Result.Y := pt.y + dy;
   Result.Z := pt.z + dz;
 end;
 
-function OffsetPolygon(const Poly: TPolygon; dx, dy, dz: Single): TPolygon;
+function OffsetPolygon(const Poly: TPolygon; dx, dy, dz: single): TPolygon;
 var
-  i: Integer;
+  i: integer;
 begin
   Result := Poly;
   for i := 0 to Poly.PointsNum - 1 do
     Result.Point[i] := OffsetPoint3D(Poly.Point[i], dx, dy, dz);
 end;
 
-function OffsetObject3D(const Obj: TObject3D; dx, dy, dz: Single): TObject3D;
+function OffsetObject3D(const Obj: TObject3D; dx, dy, dz: single): TObject3D;
 var
-  i: Integer;
+  i: integer;
 begin
   Result.Color := Obj.Color;
   Result.PolygoneNum := Obj.PolygoneNum;
-  for i:= 0 to Obj.PolygoneNum - 1 do
+  for i := 0 to Obj.PolygoneNum - 1 do
     Result.PolygoneStor[i] := OffsetPolygon(Obj.PolygoneStor[i], dx, dy, dz);
 end;
 
-function RectPolygonX(y1, z1, y2, z2, x: Single): TPolygon;
+function RectPolygonX(y1, z1, y2, z2, x: single): TPolygon;
 begin
   Result.PointsNum := 4;
   Result.Point[0] := Point3D(x, y1, z1);
@@ -167,7 +173,7 @@ begin
   Result.Point[3] := Point3D(x, y1, z2);
 end;
 
-function RectPolygonY(x1, z1, x2, z2, y: Single): TPolygon;
+function RectPolygonY(x1, z1, x2, z2, y: single): TPolygon;
 begin
   Result.PointsNum := 4;
   Result.Point[0] := Point3D(x1, y, z1);
@@ -176,7 +182,7 @@ begin
   Result.Point[3] := Point3D(x1, y, z2);
 end;
 
-function RectPolygonZ(x1, y1, x2, y2, z: Single): TPolygon;
+function RectPolygonZ(x1, y1, x2, y2, z: single): TPolygon;
 begin
   Result.PointsNum := 4;
   Result.Point[0] := Point3D(x1, y1, z);
@@ -186,9 +192,9 @@ begin
 end;
 
 
-function InitVRectObject3D(x1, y1, z1, x2, y2, z2: Integer; color: TColor): TObject3D;
+function InitVRectObject3D(x1, y1, z1, x2, y2, z2: integer; color: TColor): TObject3D;
 var
-  i: Integer;
+  i: integer;
 begin
   Result.PolygoneNum := 6;
   Result.Color := color;
@@ -204,33 +210,36 @@ end;
 
 function MergeObject3D(const a, b: TObject3D): TObject3D;
 var
-  i: Integer;
+  i: integer;
 begin
   Result := a;
   Result.PolygoneNum := a.PolygoneNum + b.PolygoneNum;
-  for i:= a.PolygoneNum to Result.PolygoneNum - 1 do
+  for i := a.PolygoneNum to Result.PolygoneNum - 1 do
     Result.PolygoneStor[i] := b.PolygoneStor[i - a.PolygoneNum];
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
 var
-  LCount, PCount, ACount: Integer;
+  LCount, PCount, ACount: integer;
 begin
   Pyramid.PolygoneNum := 5;
   Pyramid.Color := clMaroon;
 
-  for LCount := 0 to 4 do begin
+  for LCount := 0 to 4 do
+  begin
     Pyramid.PolygoneStor[LCount].PointsNum := PyrFace[LCount];
     if LCount < 4 then
-      for PCount := 0 to 2 do begin
-        ACount := (PCount*3) + (LCount *9);
+      for PCount := 0 to 2 do
+      begin
+        ACount := (PCount * 3) + (LCount * 9);
         Pyramid.PolygoneStor[LCount].Point[PCount].X := PyrPoints[ACount];
         Pyramid.PolygoneStor[LCount].Point[PCount].Y := PyrPoints[ACount + 1];
         Pyramid.PolygoneStor[LCount].Point[PCount].Z := PyrPoints[ACount + 2];
       end
     else
-      for PCount := 0 to 3 do begin
-        ACount := (PCount*3) + (LCount *9);
+      for PCount := 0 to 3 do
+      begin
+        ACount := (PCount * 3) + (LCount * 9);
         Pyramid.PolygoneStor[LCount].Point[PCount].X := PyrPoints[ACount];
         Pyramid.PolygoneStor[LCount].Point[PCount].Y := PyrPoints[ACount + 1];
         Pyramid.PolygoneStor[LCount].Point[PCount].Z := PyrPoints[ACount + 2];
@@ -241,13 +250,12 @@ begin
   Cube := InitVRectObject3D(-15, -15, -15, 15, 15, 15, clBlue);
 
   Epsilon := OffsetObject3D(MergeObject3D(
-               InitVRectObject3D(0, 0, 0, 20, 5, -5, clBlue),
-               MergeObject3D(
-                 InitVRectObject3D(0, 5, 0, 5, 35, -5, clBlue),
-                 MergeObject3D(
-                   InitVRectObject3D(5, 15, 0, 18, 20, -5, clBlue),
-                   InitVRectObject3D(5, 30, 0, 20, 35, -5, clBlue)))),
-               -10, -35/2, -2);
+    InitVRectObject3D(0, 0, 0, 20, 5, -5, clBlue),
+    MergeObject3D(InitVRectObject3D(0,
+    5, 0, 5, 35, -5, clBlue), MergeObject3D(
+    InitVRectObject3D(5, 15, 0, 18, 20, -5, clBlue),
+    InitVRectObject3D(5, 30, 0, 20, 35, -5, clBlue)))),
+    -10, -35 / 2, -2);
   Epsilon.Color := clNavy;
   aThread := TDrawThread.Create;
 end;

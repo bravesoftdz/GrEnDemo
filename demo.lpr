@@ -1,11 +1,14 @@
 program demo;
 
+{$MODE Delphi}
+
 uses
   Forms,
+  Interfaces,
   main in 'main.pas' {Form1},
   GrEn in 'GrEn.pas';
 
-{$R *.RES}
+{$R *.res}
 
 begin
   Application.Initialize;
