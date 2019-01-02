@@ -89,7 +89,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('Graphics', [TGrEn]);
+  RegisterComponents('Custom', [TGrEn]);
 end;
 
 procedure TGrEn.DrawLine3D(X1, Y1, Z1, X2, Y2, Z2: single);
